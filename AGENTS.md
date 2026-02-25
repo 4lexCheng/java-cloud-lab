@@ -7,7 +7,7 @@
 
 ## 项目结构与模块组织
 - 主代码目录：`src/main/java/com/example/javacloudlab/`。
-- 配置文件：`src/main/resources/application.properties`。
+- 配置文件：`src/main/resources/application.yml`（当前主用）；若存在 `application.properties`，避免与 yml 同名键冲突。
 - 测试目录：`src/test/java/`，包路径与主代码保持镜像结构。
 - 本地环境切换脚本：`scripts/`（PowerShell）。
 - 学习与操作文档：`docs/`（如 `docs/day1.md`）。
@@ -41,12 +41,17 @@
 - 本仓库使用脚本 `scripts/tag-day.ps1` 执行“每日提交 + 打 tag + 推送”。
 - 远端仓库默认：`origin`，主分支默认：`main`。
 - 每日标签命名默认：`day-XX-YYYYMMDD`（例如 `day-03-20260225`）。
+- 在提交当日变更前，先更新 `docs/daily-study-playbook.md`：
+  - 将对应 Day 标题标记为 `（已完成可跳过）`。
+  - 在文末追加“今日踩坑速查（YYYY-MM-DD）”总结。
 - 推荐优先使用注释标签（annotated tag），由脚本自动创建。
 - 日常执行示例（提交、打标签并推送）：
   - `powershell -ExecutionPolicy Bypass -File .\scripts\tag-day.ps1 -Day 3 -Summary "多阶段构建与镜像对比" -CommitType feat`
 - 仅本地提交和打标签（不推送）：
   - `powershell -ExecutionPolicy Bypass -File .\scripts\tag-day.ps1 -Day 3 -Summary "多阶段构建与镜像对比" -NoPush`
 - 若用户要求“按每日流程提交并打 tag”，默认按以上脚本执行；除非用户明确指定，否则不改 `Remote/Branch/TagName` 规则。
+- 用户明确要求“直接提权 push”时，可直接执行提权推送。
+- 当前终端为 Windows PowerShell 5.1 时，避免使用 `&&`，改用分步命令执行。
 
 ## Dockerfile 修改输出约定
 - 当用户要求修改 `Dockerfile` 时，必须提供以下信息：

@@ -328,3 +328,48 @@ docker build -t java-cloud-lab:day2 .
 (Invoke-RestMethod http://localhost:8080/actuator/health).status
 curl.exe http://localhost:8080/hello
 ```
+
+## 今日踩坑速查（2026-02-25）
+1. Day4 非 root 命令与基础镜像不匹配
+- 现象：`groupadd/useradd` 或 `addgroup/adduser` 在镜像里报“命令不存在”。
+- 原因：Debian/Ubuntu 与 Alpine 的用户管理命令不同。
+- 处理：
+```dockerfile
+# 运行时镜像是 eclipse-temurin:17-jre（Debian/Ubuntu 风格）
+RUN groupadd --system app && useradd --system --gid app app
+
+# 运行时镜像是 eclipse-temurin:17-jre-alpine（Alpine 风格）
+RUN addgroup -S app && adduser -S -G app app
+```
+- 关键：两套命令二选一，不要混用。
+
+2. Day4 镜像比 Day3 稍大
+- 现象：加了非 root 和健康检查后，镜像体积略增。
+- 原因：新增了 `RUN` 层（创建用户/改权限）和镜像元数据（`HEALTHCHECK`），属于预期现象。
+- 处理：这是用少量体积换安全性与可观测性，通常可以接受。
+
+3. 容器显示 `Exited (130)`
+- 现象：`docker ps -a` 中状态是 `Exited (130)`。
+- 原因：通常是前台运行时按了 `Ctrl + C`，对应 SIGINT 中断退出。
+- 处理：这不一定是程序错误；重新启动可用：
+```powershell
+docker start <container_name>
+```
+
+4. 用了 `--rm` 后容器无法再次 `start`
+- 现象：停止后找不到容器，`docker start` 失败。
+- 原因：`--rm` 会在容器停止后自动删除容器。
+- 处理：
+```powershell
+# 想保留容器用于复查时，不要加 --rm
+docker run -d --name java-lab -p 8080:8080 <image>
+```
+
+5. 进入容器后退出时误停容器
+- 现象：退出交互会话后，容器被停止。
+- 原因：使用了 `docker attach`，退出时可能中断主进程。
+- 处理：排查场景优先使用 `docker exec`：
+```powershell
+docker exec -it <container_name> sh
+# 在容器内完成操作后执行 exit，只退出会话，容器继续运行
+```
