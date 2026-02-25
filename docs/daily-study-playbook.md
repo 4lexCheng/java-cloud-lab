@@ -108,13 +108,23 @@ docker rm -f java-lab
 
 ## Day 5
 目标：环境变量配置化。
-1. 修改 `src/main/resources/application.properties`
-```properties
-server.port=${SERVER_PORT:8080}
-spring.application.name=java-cloud-lab
-management.endpoints.web.exposure.include=health,info
+1. 修改 `src/main/resources/application.yml`
+```yaml
+server:
+  port: ${SERVER_PORT:8080}
+
+spring:
+  application:
+    name: java-cloud-lab
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
 ```
-2. 验证
+2. 若存在 `src/main/resources/application.properties`，删除或清空同名配置，避免冲突。
+3. 验证
 ```powershell
 docker build -t java-cloud-lab:day5 .
 docker run --rm -e SERVER_PORT=8081 -p 8081:8081 java-cloud-lab:day5
