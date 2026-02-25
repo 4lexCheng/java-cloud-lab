@@ -36,3 +36,20 @@
 - 提交前至少运行一次 `mvn test`。
 - 提交信息建议使用约定式前缀：`feat:`、`fix:`、`docs:`、`test:`、`refactor:`。
 - PR 需包含：变更目的、关键改动、测试证据（命令或接口验证结果）、关联任务号（如有）。
+
+## 每日 Git Tag 流程（约定）
+- 本仓库使用脚本 `scripts/tag-day.ps1` 执行“每日提交 + 打 tag + 推送”。
+- 远端仓库默认：`origin`，主分支默认：`main`。
+- 每日标签命名默认：`day-XX-YYYYMMDD`（例如 `day-03-20260225`）。
+- 推荐优先使用注释标签（annotated tag），由脚本自动创建。
+- 日常执行示例（提交、打标签并推送）：
+  - `powershell -ExecutionPolicy Bypass -File .\scripts\tag-day.ps1 -Day 3 -Summary "多阶段构建与镜像对比" -CommitType feat`
+- 仅本地提交和打标签（不推送）：
+  - `powershell -ExecutionPolicy Bypass -File .\scripts\tag-day.ps1 -Day 3 -Summary "多阶段构建与镜像对比" -NoPush`
+- 若用户要求“按每日流程提交并打 tag”，默认按以上脚本执行；除非用户明确指定，否则不改 `Remote/Branch/TagName` 规则。
+
+## Dockerfile 修改输出约定
+- 当用户要求修改 `Dockerfile` 时，必须提供以下信息：
+  - 修改位置（文件路径 + 建议插入/替换位置）。
+  - 可直接执行的 PowerShell 修改命令（优先给出完整可复制命令）。
+- 若修改较大，优先提供完整 `Dockerfile` 内容，并同时附一条覆盖写入命令。
