@@ -29,7 +29,7 @@ java -jar target\java-cloud-lab-0.0.1-SNAPSHOT.jar
 - `GET /hello` -> `hello`
 - `GET /actuator/health` -> `{"status":"UP"}`
 
-## Day 2
+## Day 2（已完成可跳过）
 目标：把应用放进 Docker 容器。
 1. 打包 jar
 ```powershell
@@ -56,7 +56,7 @@ curl http://localhost:8080/hello
 curl http://localhost:8080/actuator/health
 ```
 
-## Day 3
+## Day 3（已完成可跳过）
 目标：多阶段构建（缩小镜像）。
 说明：如果 Day 2 已经是“宿主机构建 jar + 运行时镜像只 COPY jar（不包含 Maven 与源码）”，那么改成多阶段后镜像体积可能不会明显变小；主要收益是构建环境一致性和可复现性。
 1. 把 `Dockerfile` 改为多阶段：
@@ -79,7 +79,7 @@ docker build -t java-cloud-lab:day3 .
 docker images | findstr java-cloud-lab
 ```
 
-## Day 4
+## Day 4（已完成可跳过）
 目标：非 root 运行 + 健康检查。
 1. 在运行阶段增加（按基础镜像选择其一）：
 ```dockerfile
@@ -106,7 +106,7 @@ docker ps
 docker rm -f java-lab
 ```
 
-## Day 5
+## Day 5（已完成可跳过）
 目标：环境变量配置化。
 1. 修改 `src/main/resources/application.yml`
 ```yaml
