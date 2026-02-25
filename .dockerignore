@@ -1,0 +1,6 @@
+target/
+.git/
+.idea/
+docs/
+run-day1.log
+run-day1.err.log
