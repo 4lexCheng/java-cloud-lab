@@ -143,7 +143,7 @@ curl http://localhost:8081/hello
 - 为什么非 root 运行
 - 质量门禁复核：执行一次 `mvn test`
 
-## Day 8
+## Day 8（已完成可跳过）
 目标：接入 MySQL（本地先跑）。
 - 加依赖：`spring-boot-starter-data-jpa`、`mysql-connector-j`
 - 建一个最小实体 + Repository + 测试接口
@@ -373,3 +373,33 @@ docker run -d --name java-lab -p 8080:8080 <image>
 docker exec -it <container_name> sh
 # 在容器内完成操作后执行 exit，只退出会话，容器继续运行
 ```
+
+## 今日踩坑速查（2026-02-27）
+1. `DB_URL` 被换行导致 JDBC URL 非法
+- 现象：启动时出现 `Driver com.mysql.cj.jdbc.Driver claims to not accept jdbcUrl`，并伴随 `HHH000342`。
+- 原因：PowerShell 多行赋值把换行和空格写进了连接串。
+- 处理：`DB_URL` 必须一行写完：
+```powershell
+$env:DB_URL="jdbc:mysql://127.0.0.1:3307/java_cloud_lab?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
+```
+
+2. PowerShell 下 `curl.exe` JSON 转义错误导致 400
+- 现象：`POST /api/todos` 返回 `400 Bad Request`，并出现 `URL rejected` / `Bad hostname`。
+- 原因：使用了 `cmd` 风格转义（`\\"`），PowerShell 参数被拆乱。
+- 处理：使用单引号 JSON 或 `Invoke-RestMethod`：
+```powershell
+curl.exe -X POST "http://localhost:8080/api/todos" -H "Content-Type: application/json" --data-raw '{"title":"day8 done"}'
+```
+
+3. MySQL 8 服务注册被拒绝（非管理员终端）
+- 现象：注册服务时报 `Install/Remove of the Service Denied!`。
+- 原因：当前终端不具备管理员权限。
+- 处理：先用进程模式启动，后续在管理员终端注册服务：
+```powershell
+"D:\mysql\versions\8.4.8\mysql-8.4.8-winx64\bin\mysqld.exe" --defaults-file="D:\mysql\conf\my-8.4.8.ini" --console
+```
+
+4. `root@localhost` 可用但 `127.0.0.1` 无法连接
+- 现象：TCP 登录报 `Host '127.0.0.1' is not allowed to connect`。
+- 原因：账号主机匹配未覆盖 `127.0.0.1`。
+- 处理：补齐 `root@127.0.0.1` 授权并重验连接。

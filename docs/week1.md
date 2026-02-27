@@ -1,0 +1,31 @@
+# Week 1 复盘
+
+## Day 8（2026-02-27）
+- 目标：接入 MySQL，完成本地读写闭环。
+- 完成项：
+  - 引入 `spring-boot-starter-data-jpa`、`mysql-connector-j`，并补充测试用 H2。
+  - 新增最小链路：`TodoItem` 实体、`TodoItemRepository`、`TodoItemService`、`TodoItemController`。
+  - 提供接口：
+    - `POST /api/todos`
+    - `GET /api/todos`
+    - `GET /api/todos/{id}`
+  - `mvn test` 通过（2/2）。
+- 连接配置：
+  - host：`127.0.0.1`
+  - port：`3307`
+  - db：`java_cloud_lab`
+  - user：`root`
+  - password：`123`
+  - URL：`jdbc:mysql://127.0.0.1:3307/java_cloud_lab?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC`
+- 验收证据：
+  - 应用启动无 `Communications link failure`。
+  - `POST /api/todos` 可创建数据。
+  - `GET /api/todos` 可查询到新增数据。
+  - MySQL 中 `todo_items` 表可查询到写入记录。
+- 卡点与处理：
+  - `DB_URL` 换行导致 JDBC URL 非法：改为单行赋值。
+  - PowerShell 下 `curl.exe` 转义导致 400：改为单引号 JSON 或 `Invoke-RestMethod`。
+  - MySQL 8 服务注册被拒绝（非管理员）：先用进程模式启动，后续管理员终端注册服务。
+  - `Host '127.0.0.1' is not allowed to connect`：补齐 `root@127.0.0.1` 账号授权。
+- 结论：
+  - Day8 目标已完成，代码与数据库联通正常，可进入 Day9（Compose 联调）。
